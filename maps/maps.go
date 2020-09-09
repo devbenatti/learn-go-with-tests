@@ -8,6 +8,8 @@ const (
 	ErrNotFound = ErrDictionary("We could not find a word you are looking for")
 	// ErrWordExists word already exists
 	ErrWordExists = ErrDictionary("You cannot add the word because it already exists")
+	// ErrWordNonexistent word not exist
+	ErrWordNonexistent = ErrDictionary("the word could not be updated because it does not exist")
 )
 
 // ErrDictionary represents a dictionary error
@@ -38,4 +40,23 @@ func (d Dictionary) Add(word, definition string) error {
 		return err
 	}
 	return nil
+}
+
+// Update receives a new definition and update in a dictionary
+func (d Dictionary) Update(word, definition string) error {
+	_, err := d.Search(word)
+	switch err {
+	case ErrNotFound:
+		return ErrWordNonexistent
+	case nil:
+		d[word] = definition
+	default:
+		return err
+	}
+	return nil
+}
+
+// Delete remove word from dictionary
+func (d Dictionary) Delete(word string) {
+	delete(d, word)
 }
